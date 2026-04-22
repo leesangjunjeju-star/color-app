@@ -1,51 +1,47 @@
 "use client";
 
 import { useState } from "react";
-import ColorThief from "colorthief";
 
 export default function Home() {
+  const [image, setImage] = useState<string | null>(null);
   const [colors, setColors] = useState<string[]>([]);
 
   const handleImage = (e: any) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    const img = document.createElement("img");
-    img.crossOrigin = "anonymous";
-    img.src = URL.createObjectURL(file);
+    const url = URL.createObjectURL(file);
+    setImage(url);
 
-    img.onload = () => {
-      try {
-        const colorThief = new ColorThief();
-        const palette = colorThief.getPalette(img, 5);
-
-        const hexColors = palette.map(
-          (rgb: number[]) =>
-            "#" +
-            rgb.map((x) => x.toString(16).padStart(2, "0")).join("")
-        );
-
-        setColors(hexColors);
-      } catch (err) {
-        console.error("ColorThief error:", err);
-      }
-    };
+    // 임시 색상 (UI 구조 먼저 확인용)
+    setColors(["#ff0000", "#00ff00", "#0000ff"]);
   };
 
   return (
-    <div className="p-10">
+    <div className="min-h-screen bg-gray-50 p-8">
+      
+      {/* 제목 */}
       <h1 className="text-2xl font-bold mb-6">
-        색 분석 & AI 해설 앱 (v1)
+        🎨 색 분석 & AI 해설 앱
       </h1>
 
+      {/* 업로드 */}
       <input type="file" accept="image/*" onChange={handleImage} />
 
+      {/* 이미지 미리보기 */}
+      {image && (
+        <div className="mt-6">
+          <img src={image} className="w-64 rounded shadow" />
+        </div>
+      )}
+
+      {/* 색상 결과 */}
       <div className="mt-6 flex gap-4">
         {colors.map((c, i) => (
           <div key={i} className="text-center">
             <div
-              style={{ backgroundColor: c }}
               className="w-20 h-20 rounded"
+              style={{ backgroundColor: c }}
             />
             <p>{c}</p>
           </div>
